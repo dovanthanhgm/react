@@ -1,5 +1,5 @@
 import { CustomLayout } from '~/layouts'
-import { Home, Login } from '~/pages'
+import { Home, Login, About } from '~/pages'
 
 const define = {
     home: '/',
@@ -10,14 +10,13 @@ const define = {
 
 // Public routes
 const publicRoutes = [
-    { path: define.about, component: Home, layout: CustomLayout },
-    { path: define.contact, component: Home, layout: null },
     { path: define.login, component: Login, layout: null },
+    { path: define.home, component: Home },
 ]
 
 // Private routes
 const privateRoutes = [
-    { path: define.home, component: Home },
+    { path: define.about, component: About, layout: CustomLayout },
 ];
 
 // Combine routes

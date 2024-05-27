@@ -1,9 +1,10 @@
 import { Fragment } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import routes from '~/routes'
 import DefaultLayout from '~/layouts'
 
 function App() {
+    const isAuthenticated = false
     return (
         <Router>
             <div className="App">
@@ -18,14 +19,20 @@ function App() {
                             Layout = Fragment
                         }
 
+                        const content = (
+                            <Layout>
+                                <Page />
+                            </Layout>
+                        )
+
                         return (
                             <Route
                                 key={index}
                                 path={route.path}
                                 element={
-                                    <Layout>
-                                        <Page />
-                                    </Layout>
+                                    route.private ? (
+                                        isAuthenticated ? content: <Navigate to="/login"/>
+                                    ) : content
                                 }
                             />
                         )
