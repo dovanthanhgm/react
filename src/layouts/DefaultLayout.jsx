@@ -10,7 +10,7 @@ function DefaultLayout({ children }) {
         <div className="">
             <Header />
             <div className="">
-                <Sidebar />
+                {/* <Sidebar /> */}
                 <div className="">{children}</div>
             </div>
         </div>

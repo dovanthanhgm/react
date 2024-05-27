@@ -1,13 +1,14 @@
 import { useState } from "react"
-import axios from "axios";
+import { useAuth } from "~/context/AuthProvider";
+import { getEnvVar } from "~/utils/env";
 
 function Login() {
+
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
-        email: "",
-        password: ""
+        username: getEnvVar('VITE_ENV') == 'development' && getEnvVar('VITE_USERNAME_DEMO') || "",
+        password: getEnvVar('VITE_ENV') == 'development' && getEnvVar('VITE_PASSWORD_DEMO') || ""
     })
-
 
     const handleChange = (e) => {
         setFormData({
@@ -15,6 +16,9 @@ function Login() {
             [e.target.name]: e.target.value,
         });
     };
+
+    const auth = useAuth()
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (isLoading) {
@@ -24,24 +28,13 @@ function Login() {
         setIsLoading(true);
 
         try {
-            // const response = await axios.post("http://127.0.0.1:8000/api/login/", formData)
-            // console.log("Success!", response.data)
-            // setSuccessMessage("Login Successful!")
-            // localStorage.setItem("accessToken", response.data.tokens.access);
-            // localStorage.setItem("refreshToken", response.data.tokens.refresh)
-            
-            const response = await axios.get("https://hub.dummyapis.com/delay?seconds=1")
+            if (formData.username !== "" && formData.password !== "") {
+                auth.loginUser(formData);
+                return;
+            }
+            alert("pleae provide a valid input");
         }
         catch (error) {
-            // console.log("Error during Login!", error.response?.data);
-            // if (error.response && error.response.data) {
-            //     Object.keys(error.response.data).forEach(field => {
-            //         const errorMessages = error.response.data[field];
-            //         if (errorMessages && errorMessages.length > 0) {
-            //             setError(errorMessages[0]);
-            //         }
-            //     })
-            // }
         }
         finally {
             setIsLoading(false)
@@ -49,36 +42,40 @@ function Login() {
 
     };
     return (
-        <div>
-            <h2>Login:</h2>
-            <form>
+        <div className="flex h-screen">
+            <div className="m-auto border border-black p-5">
+                <form className="">
+                    <div className="my-2">
+                        <label>Username:</label>
+                        <input
+                            type="text"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
+                            className="border border-black">
+                        </input>
+                    </div>
+                    
+                    <div className="my-2">
+                        <label>Password:</label>
+                        <input
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className="border border-black">
+                        </input>
+                    </div>
 
-                <label>email:</label>
-                <br />
-                <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                ></input>{" "}
-                <br />
-                <label>password:</label>
-                <br />
-                <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                ></input>{" "}
-
-                <br />
-                <br />
-                <button type="submit" onClick={handleSubmit}>
-                    Login
-                </button>
-                <br />
-                {isLoading ? "loadding..." : ""}
-            </form>
+                    <div className="flex">
+                        <button type="submit" className="mx-auto border border-black" onClick={handleSubmit}>
+                            Login
+                        </button>
+                    </div>
+                    <br />
+                    {isLoading ? "loadding..." : ""}
+                </form>
+            </div>
         </div>
     )
 }
