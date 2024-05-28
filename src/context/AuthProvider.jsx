@@ -1,10 +1,13 @@
 import { useContext, createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import * as authService from '~/services/authService';
 
 const AuthContext = createContext()
+export const useAuth = () => {
+    return useContext(AuthContext);
+};
 
 export const AuthProvider = ({children}) => {
-
     let [user, setUser] = useState(() => localStorage.getItem('authTokens' || null))
     let [authTokens, setAuthTokens] = useState(() => localStorage.getItem('authTokens' || null))
     let [loading, setLoading] = useState(true)
@@ -12,17 +15,8 @@ export const AuthProvider = ({children}) => {
     const navigate = useNavigate()
 
     let loginUser = async (formData) => {
-        const response = await fetch('https://dummyjson.com/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-
-        let data = await response.json();
-
-        if(response.status === 200){
+        let data = await authService.login(formData);
+        if(data){
             localStorage.setItem('authTokens',data.token);
             setAuthTokens(data.token)
             setUser(data.username)
@@ -40,19 +34,11 @@ export const AuthProvider = ({children}) => {
     }
 
     const updateToken = async () => {
-        const response = await fetch('https://dummyjson.com/auth/refresh', {
-			method: 'POST',
-			headers: {
-			  'Content-Type': 'application/json',
-			  'Authorization': `Bearer ${authTokens}`, 
-			},
-			body: JSON.stringify({
-			  expiresInMins: 30, // optional, defaults to 60
-			})
-		  })
-       
-        const data = await response.json()
-        if (response.status === 200) {
+        const data = await authService.refreshToken(
+            JSON.stringify({expiresInMins: 30}),
+            authTokens
+        );
+        if (data) {
             setAuthTokens(data.token)
             setUser(data.username)
             localStorage.setItem('authTokens',data.token)
@@ -77,7 +63,7 @@ export const AuthProvider = ({children}) => {
             updateToken()
         }
 
-        const REFRESH_INTERVAL = 1000 * 60 * 4 // 4 minutes
+        const REFRESH_INTERVAL = 1000 * 60 * 4
         let interval = setInterval(()=>{
             if(authTokens){
                 updateToken()
@@ -93,10 +79,4 @@ export const AuthProvider = ({children}) => {
         </AuthContext.Provider>
     )
 }
-
-
 export default AuthProvider;
-
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
