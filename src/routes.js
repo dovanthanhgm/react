@@ -4,7 +4,7 @@ import { Home, Login, Logout, About } from '~/pages'
 export const define = {
     home: '/',
     about: '/about',
-    contact: '/contact',
+    // contact: '/contact',
     login: '/login',
     logout: '/logout'
 }
