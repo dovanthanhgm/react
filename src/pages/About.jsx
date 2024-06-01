@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getTodos, todoSelector } from "../features/todo/todoSlice"
+import { getTodos, todoSelector } from "~/features/todo/todoSlice"
 
 function About() {
     const dispatch = useDispatch()
